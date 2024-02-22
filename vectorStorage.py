@@ -24,16 +24,18 @@ if __name__ == '__main__':
     loader=TextLoader("/Users/Manny/OneDrive/Desktop/LangChain/Assets/mediumblog1.txt",encoding="utf8")
     document=loader.load()
 
-    #split the chunks into its specific czhunks
+    #split the texts into its specific czhunks
     text_splitter=CharacterTextSplitter(chunk_size=50,chunk_overlap=0)
     text = text_splitter.split_documents(document)
     #print(len(text))
     #print(document)
+
     #Initiate the Embeddings
     embeddings = OpenAIEmbeddings()
     #PineCode: Vector Databse
     docsearch = PineconeStore.from_documents(text,embeddings,index_name="medium-blogs-embedding-index") #convert text into vectors
 
+    #Initiate LLM chain and give it a prompt
     qa=RetrievalQA.from_chain_type(llm=OpenAI(), chain_type='stuff', retriever=docsearch.as_retriever())
     query="What is a vector data base? Give me a 15 word answer for a beginner"
     result=qa({"query":query})

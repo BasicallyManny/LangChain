@@ -6,10 +6,11 @@ from dotenv import find_dotenv, load_dotenv #imports to allow us to find and loa
 
 from langchain_community.document_loaders import TextLoader
 from langchain.text_splitter import CharacterTextSplitter
-from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
+from langchain_openai import OpenAI
 from pinecone import Pinecone
-from langchain.vectorstores import Pinecone as PineconeStore
-
+from langchain_community.vectorstores import Pinecone as PineconeStore
+from langchain.chains import RetrievalQA
 load_dotenv()
 load_dotenv(find_dotenv())
 
@@ -23,12 +24,17 @@ if __name__ == '__main__':
     loader=TextLoader("/Users/Manny/OneDrive/Desktop/LangChain/Assets/mediumblog1.txt",encoding="utf8")
     document=loader.load()
 
-    #split the chunks into its specific chunks
+    #split the chunks into its specific czhunks
     text_splitter=CharacterTextSplitter(chunk_size=50,chunk_overlap=0)
     text = text_splitter.split_documents(document)
-    print(len(text))
+    #print(len(text))
     #print(document)
     #Initiate the Embeddings
-    embeddings = OpenAIEmbeddings(open_api_key=os.environ.get('OPENAI_API_KEY'))
+    embeddings = OpenAIEmbeddings()
     #PineCode: Vector Databse
     docsearch = PineconeStore.from_documents(text,embeddings,index_name="medium-blogs-embedding-index") #convert text into vectors
+
+    qa=RetrievalQA.from_chain_type(llm=OpenAI(), chain_type='stuff', retriever=docsearch.as_retriever())
+    query="What is a vector data base? Give me a 15 word answer for a beginner"
+    result=qa({"query":query})
+    print(result)

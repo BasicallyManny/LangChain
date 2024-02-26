@@ -18,7 +18,7 @@ load_dotenv(find_dotenv())
 Pinecone(api_key=os.environ.get('PINECONE_API_KEY'))
 
 if __name__ == '__main__':
-
+  
     #Load in the text document
     print("Vector Store")
     loader=TextLoader("/Users/Manny/OneDrive/Desktop/LangChain/Assets/mediumblog1.txt",encoding="utf8")
